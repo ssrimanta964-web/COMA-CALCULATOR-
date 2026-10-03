@@ -271,9 +271,9 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
   ];
 
   return (
-    <div className="flex flex-col gap-4 pb-20 sm:pb-6 max-w-xl mx-auto w-full">
-      {/* 4 LARGE VERTICALLY STACKED CARDS */}
-      <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-2.5 sm:gap-4 pb-24 sm:pb-6 max-w-xl mx-auto w-full">
+      {/* 4 CARDS: 2x2 GRID ON MOBILE, STACKED ON DESKTOP */}
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-col sm:gap-2.5">
         {cards.map((card) => {
           const isActive = activeBase === card.base;
           const isCopied = copiedKey === card.base;
@@ -282,26 +282,26 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
             <div
               key={card.base}
               onClick={() => setActiveBase(card.base)}
-              className={`p-3.5 sm:p-4 rounded-2xl bg-slate-900/90 border transition-all cursor-pointer relative shadow-md select-none ${
+              className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/90 border transition-all cursor-pointer relative shadow-md select-none flex flex-col justify-between min-h-[66px] sm:min-h-0 ${
                 isActive
-                  ? `bg-slate-900 ${card.activeBorder} ${card.activeGlow}`
+                  ? `bg-slate-900 ${card.activeBorder} ${card.activeGlow} ring-2 ring-offset-1 ring-offset-slate-950`
                   : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/70'
               }`}
             >
               {/* Card Header */}
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between gap-1 mb-0.5">
+                <div className="flex items-center gap-1.5 overflow-hidden">
                   <span
-                    className={`font-mono text-[11px] font-bold px-2 py-0.5 rounded-full border ${card.badgeBg}`}
+                    className={`font-mono text-[9px] sm:text-[11px] font-bold px-1.5 py-0.2 sm:px-2 sm:py-0.5 rounded-full border shrink-0 ${card.badgeBg}`}
                   >
-                    BASE {card.radix}
+                    B{card.radix}
                   </span>
-                  <span className="text-xs font-semibold text-slate-300">
+                  <span className="text-[11px] sm:text-xs font-semibold text-slate-300 truncate">
                     {card.label}
                   </span>
                   {isActive && (
-                    <span className="flex items-center gap-1 text-[10px] font-bold text-cyan-400 animate-pulse">
-                      ● Active Input
+                    <span className="hidden sm:inline-flex items-center text-[10px] font-bold text-cyan-400 animate-pulse">
+                      ● Active
                     </span>
                   )}
                 </div>
@@ -309,20 +309,20 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
                 {/* Copy Button */}
                 <button
                   onClick={(e) => copyToClipboard(card.raw, card.base, e)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="p-1 sm:p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
                   title={`Copy ${card.label}`}
                 >
                   {isCopied ? (
-                    <Check className="w-4 h-4 text-emerald-400" />
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
                   ) : (
-                    <Copy className="w-4 h-4" />
+                    <Copy className="w-3.5 h-3.5 text-slate-400" />
                   )}
                 </button>
               </div>
 
               {/* Large Value Display */}
               <div
-                className={`font-mono text-xl sm:text-2xl font-bold tracking-tight break-all ${
+                className={`font-mono text-base sm:text-2xl font-bold tracking-tight break-all truncate ${
                   isActive ? card.color : 'text-slate-200'
                 }`}
               >
@@ -331,8 +331,8 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
 
               {/* Formatted Nibble / Byte preview for Binary/Hex */}
               {card.subValue && card.subValue !== card.value && (
-                <div className="text-[11px] font-mono text-slate-400 truncate mt-1">
-                  Grouped: <span className="text-slate-300">{card.subValue}</span>
+                <div className="text-[9px] sm:text-[11px] font-mono text-slate-400 truncate mt-0.5">
+                  <span className="text-slate-300">{card.subValue}</span>
                 </div>
               )}
             </div>
@@ -341,11 +341,11 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
       </div>
 
       {/* FRACTION TOGGLE STRIP */}
-      <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs">
+      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-[11px] sm:text-xs">
         <span className="text-slate-400 font-medium">Fractional Digits:</span>
         <button
           onClick={() => setSupportFraction(!supportFraction)}
-          className={`px-2.5 py-1 rounded-lg font-mono text-[11px] font-semibold border flex items-center gap-1.5 transition-colors ${
+          className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-semibold border flex items-center gap-1.5 transition-colors ${
             supportFraction
               ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
               : 'bg-slate-900 text-slate-400 border-slate-800'
@@ -357,16 +357,16 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
       </div>
 
       {/* CONTEXTUAL ON-SCREEN KEYPAD (Only inputs numbers/letters, dynamically disables invalid keys) */}
-      <div className="bg-slate-900/95 border border-slate-800 rounded-3xl p-3 sm:p-4 shadow-2xl backdrop-blur-xl">
-        <div className="flex items-center justify-between text-[11px] text-slate-400 mb-2 px-1">
+      <div className="bg-slate-900/95 border border-slate-800 rounded-2xl sm:rounded-3xl p-2 sm:p-4 shadow-2xl backdrop-blur-xl">
+        <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400 mb-1.5 px-1">
           <span>Keypad ({activeBase} Mode)</span>
-          <span className="text-cyan-400 font-semibold">Tapping edits {activeBase}</span>
+          <span className="text-cyan-400 font-semibold text-[10px]">Editing {activeBase}</span>
         </div>
 
         {/* Keypad Grid */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1 sm:gap-1.5">
           {/* Hex Row (A - F) */}
-          <div className="grid grid-cols-6 gap-1.5">
+          <div className="grid grid-cols-6 gap-1 sm:gap-1.5">
             {['A', 'B', 'C', 'D', 'E', 'F'].map((k) => {
               const active = isKeyActive(k);
               return (
@@ -374,7 +374,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
                   key={k}
                   disabled={!active}
                   onClick={() => handleKeypadPress(k)}
-                  className={`h-11 sm:h-12 rounded-xl font-mono text-sm sm:text-base font-bold transition-all flex items-center justify-center select-none ${
+                  className={`h-9 sm:h-11 rounded-lg sm:rounded-xl font-mono text-xs sm:text-base font-bold transition-all flex items-center justify-center select-none ${
                     active
                       ? 'bg-amber-950/40 hover:bg-amber-900/60 active:scale-95 text-amber-300 border border-amber-800/60 shadow-sm'
                       : 'bg-slate-950/40 text-slate-700 border border-slate-900 cursor-not-allowed'
@@ -387,7 +387,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
           </div>
 
           {/* Digits & Edits Grid (4 columns) */}
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-4 gap-1 sm:gap-1.5">
             {/* Row 1: 7, 8, 9, Backspace */}
             {['7', '8', '9'].map((k) => {
               const active = isKeyActive(k);
@@ -396,7 +396,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
                   key={k}
                   disabled={!active}
                   onClick={() => handleKeypadPress(k)}
-                  className={`h-12 sm:h-14 rounded-xl font-mono text-lg font-bold transition-all flex items-center justify-center select-none ${
+                  className={`h-10 sm:h-13 rounded-lg sm:rounded-xl font-mono text-base sm:text-lg font-bold transition-all flex items-center justify-center select-none ${
                     active
                       ? 'bg-slate-800 hover:bg-slate-700 active:scale-95 text-white border border-slate-700/80 shadow-sm'
                       : 'bg-slate-950/40 text-slate-700 border border-slate-900 cursor-not-allowed'
@@ -408,10 +408,10 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
             })}
             <button
               onClick={() => handleKeypadPress('BACKSPACE')}
-              className="h-12 sm:h-14 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-rose-300 border border-slate-700/80 flex items-center justify-center transition-all select-none"
+              className="h-10 sm:h-13 rounded-lg sm:rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-rose-300 border border-slate-700/80 flex items-center justify-center transition-all select-none"
               title="Backspace"
             >
-              <Delete className="w-5 h-5" />
+              <Delete className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
             {/* Row 2: 4, 5, 6, Clear */}
@@ -422,7 +422,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
                   key={k}
                   disabled={!active}
                   onClick={() => handleKeypadPress(k)}
-                  className={`h-12 sm:h-14 rounded-xl font-mono text-lg font-bold transition-all flex items-center justify-center select-none ${
+                  className={`h-10 sm:h-13 rounded-lg sm:rounded-xl font-mono text-base sm:text-lg font-bold transition-all flex items-center justify-center select-none ${
                     active
                       ? 'bg-slate-800 hover:bg-slate-700 active:scale-95 text-white border border-slate-700/80 shadow-sm'
                       : 'bg-slate-950/40 text-slate-700 border border-slate-900 cursor-not-allowed'
@@ -434,7 +434,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
             })}
             <button
               onClick={() => handleKeypadPress('CLEAR')}
-              className="h-12 sm:h-14 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 active:scale-95 text-rose-300 border border-rose-800/80 font-mono text-xs sm:text-sm font-bold flex items-center justify-center transition-all select-none"
+              className="h-10 sm:h-13 rounded-lg sm:rounded-xl bg-rose-950/60 hover:bg-rose-900/80 active:scale-95 text-rose-300 border border-rose-800/80 font-mono text-xs sm:text-sm font-bold flex items-center justify-center transition-all select-none"
             >
               CLR
             </button>
@@ -447,7 +447,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
                   key={k}
                   disabled={!active}
                   onClick={() => handleKeypadPress(k)}
-                  className={`h-12 sm:h-14 rounded-xl font-mono text-lg font-bold transition-all flex items-center justify-center select-none ${
+                  className={`h-10 sm:h-13 rounded-lg sm:rounded-xl font-mono text-base sm:text-lg font-bold transition-all flex items-center justify-center select-none ${
                     active
                       ? 'bg-slate-800 hover:bg-slate-700 active:scale-95 text-white border border-slate-700/80 shadow-sm'
                       : 'bg-slate-950/40 text-slate-700 border border-slate-900 cursor-not-allowed'
@@ -459,7 +459,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
             })}
             <button
               onClick={() => handleKeypadPress('+/-')}
-              className="h-12 sm:h-14 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-cyan-300 border border-slate-700/80 font-mono text-base font-bold flex items-center justify-center transition-all select-none"
+              className="h-10 sm:h-13 rounded-lg sm:rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-cyan-300 border border-slate-700/80 font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all select-none"
               title="Toggle negative (±)"
             >
               ±
@@ -469,14 +469,14 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
             <button
               disabled={!isKeyActive('0')}
               onClick={() => handleKeypadPress('0')}
-              className="col-span-2 h-12 sm:h-14 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white border border-slate-700/80 font-mono text-lg font-bold flex items-center justify-center transition-all select-none"
+              className="col-span-2 h-10 sm:h-13 rounded-lg sm:rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white border border-slate-700/80 font-mono text-base sm:text-lg font-bold flex items-center justify-center transition-all select-none"
             >
               0
             </button>
             <button
               disabled={!isKeyActive('.')}
               onClick={() => handleKeypadPress('.')}
-              className="h-12 sm:h-14 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-cyan-300 border border-slate-700/80 font-mono text-xl font-bold flex items-center justify-center transition-all select-none"
+              className="h-10 sm:h-13 rounded-lg sm:rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-cyan-300 border border-slate-700/80 font-mono text-lg sm:text-xl font-bold flex items-center justify-center transition-all select-none"
             >
               .
             </button>
@@ -486,7 +486,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
                 const nextIdx = (baseOrder.indexOf(activeBase) + 1) % baseOrder.length;
                 setActiveBase(baseOrder[nextIdx]);
               }}
-              className="h-12 sm:h-14 rounded-xl bg-cyan-950/60 hover:bg-cyan-900 active:scale-95 text-cyan-300 border border-cyan-800/80 font-mono text-xs font-bold flex items-center justify-center transition-all select-none"
+              className="h-10 sm:h-13 rounded-lg sm:rounded-xl bg-cyan-950/60 hover:bg-cyan-900 active:scale-95 text-cyan-300 border border-cyan-800/80 font-mono text-xs font-bold flex items-center justify-center transition-all select-none"
               title="Cycle to next base"
             >
               NEXT

@@ -282,7 +282,7 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-3 pb-20 sm:pb-6 max-w-sm sm:max-w-md mx-auto w-full">
+    <div className="flex flex-col gap-2 sm:gap-3 pb-24 sm:pb-6 max-w-sm sm:max-w-md mx-auto w-full">
       {/* 1. TOP BASE SELECTOR TOGGLE */}
       <div className="flex items-center justify-between p-1 bg-slate-900 border border-slate-800 rounded-2xl shadow-inner">
         {(['HEX', 'DEC', 'OCT', 'BIN'] as BaseType[]).map((base) => {
@@ -304,21 +304,21 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
       </div>
 
       {/* 2. SMARTPHONE CALCULATOR DISPLAY */}
-      <div className="bg-slate-950/90 border border-slate-800 rounded-3xl p-5 shadow-inner flex flex-col justify-end min-h-[120px] relative">
-        <div className="text-right text-xs font-mono text-slate-400 min-h-[20px] truncate">
+      <div className="bg-slate-950/90 border border-slate-800 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-inner flex flex-col justify-end min-h-[85px] sm:min-h-[120px] relative">
+        <div className="text-right text-[11px] sm:text-xs font-mono text-slate-400 min-h-[18px] truncate">
           {equationPreview}
         </div>
 
-        <div className="flex items-baseline justify-between gap-2 mt-1">
+        <div className="flex items-baseline justify-between gap-2 mt-0.5 sm:mt-1">
           <button
             onClick={copyDisplay}
             className="p-1 text-slate-400 hover:text-white transition-colors"
             title="Copy value"
           >
-            {isCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            {isCopied ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
           </button>
           <div
-            className={`text-right font-mono text-3xl sm:text-4xl font-extrabold tracking-tight break-all select-all flex-1 ${
+            className={`text-right font-mono text-2xl sm:text-4xl font-extrabold tracking-tight break-all select-all flex-1 ${
               calcError ? 'text-rose-400' : 'text-white'
             }`}
           >
@@ -329,12 +329,12 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
 
       {/* 3. HEX BUTTONS ROW (Visible or active when in HEX mode) */}
       {activeBase === 'HEX' && (
-        <div className="grid grid-cols-6 gap-1.5 p-1 bg-slate-900/60 rounded-2xl border border-slate-800/80">
+        <div className="grid grid-cols-6 gap-1 p-1 bg-slate-900/60 rounded-xl sm:rounded-2xl border border-slate-800/80">
           {['A', 'B', 'C', 'D', 'E', 'F'].map((k) => (
             <button
               key={k}
               onClick={() => handleInputDigit(k)}
-              className="h-10 rounded-xl bg-amber-950/40 hover:bg-amber-900/60 active:scale-95 text-amber-300 border border-amber-800/60 font-mono text-sm font-bold flex items-center justify-center transition-all select-none"
+              className="h-8 sm:h-10 rounded-lg sm:rounded-xl bg-amber-950/40 hover:bg-amber-900/60 active:scale-95 text-amber-300 border border-amber-800/60 font-mono text-xs sm:text-sm font-bold flex items-center justify-center transition-all select-none"
             >
               {k}
             </button>
@@ -343,23 +343,23 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
       )}
 
       {/* 4. STANDARD SMARTPHONE CALCULATOR KEYPAD */}
-      <div className="grid grid-cols-4 gap-2 bg-slate-900/90 border border-slate-800 rounded-3xl p-3 sm:p-4 shadow-xl">
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2 bg-slate-900/90 border border-slate-800 rounded-2xl sm:rounded-3xl p-2.5 sm:p-4 shadow-xl">
         {/* Row 1: C, ±, %, ÷ */}
         <button
           onClick={handleClear}
-          className="h-14 sm:h-16 rounded-2xl bg-rose-950/50 hover:bg-rose-900/70 active:scale-95 text-rose-300 font-mono text-base font-bold flex items-center justify-center transition-all select-none"
+          className="h-11 sm:h-15 rounded-xl sm:rounded-2xl bg-rose-950/50 hover:bg-rose-900/70 active:scale-95 text-rose-300 font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all select-none"
         >
           C
         </button>
         <button
           onClick={handleNegate}
-          className="h-14 sm:h-16 rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 font-mono text-base font-bold flex items-center justify-center transition-all select-none"
+          className="h-11 sm:h-15 rounded-xl sm:rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all select-none"
         >
           ±
         </button>
         <button
           onClick={() => handleOperator('%')}
-          className={`h-14 sm:h-16 rounded-2xl font-mono text-base font-bold flex items-center justify-center transition-all select-none ${
+          className={`h-11 sm:h-15 rounded-xl sm:rounded-2xl font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all select-none ${
             pendingOp === '%'
               ? 'bg-blue-600 text-white shadow-md'
               : 'bg-slate-800 hover:bg-slate-700 active:scale-95 text-blue-300'
@@ -369,7 +369,7 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
         </button>
         <button
           onClick={() => handleOperator('÷')}
-          className={`h-14 sm:h-16 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all select-none ${
+          className={`h-11 sm:h-15 rounded-xl sm:rounded-2xl font-mono text-lg sm:text-xl font-bold flex items-center justify-center transition-all select-none ${
             pendingOp === '÷'
               ? 'bg-blue-600 text-white shadow-md'
               : 'bg-blue-600/30 hover:bg-blue-600/50 active:scale-95 text-blue-400 border border-blue-500/30'
@@ -384,7 +384,7 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
             key={k}
             disabled={!isKeyActive(k)}
             onClick={() => handleInputDigit(k)}
-            className={`h-14 sm:h-16 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all select-none ${
+            className={`h-11 sm:h-15 rounded-xl sm:rounded-2xl font-mono text-base sm:text-xl font-bold flex items-center justify-center transition-all select-none ${
               isKeyActive(k)
                 ? 'bg-slate-800 hover:bg-slate-700 active:scale-95 text-white'
                 : 'bg-slate-950/40 text-slate-700 cursor-not-allowed'
@@ -395,7 +395,7 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
         ))}
         <button
           onClick={() => handleOperator('×')}
-          className={`h-14 sm:h-16 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all select-none ${
+          className={`h-11 sm:h-15 rounded-xl sm:rounded-2xl font-mono text-lg sm:text-xl font-bold flex items-center justify-center transition-all select-none ${
             pendingOp === '×'
               ? 'bg-blue-600 text-white shadow-md'
               : 'bg-blue-600/30 hover:bg-blue-600/50 active:scale-95 text-blue-400 border border-blue-500/30'
@@ -410,7 +410,7 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
             key={k}
             disabled={!isKeyActive(k)}
             onClick={() => handleInputDigit(k)}
-            className={`h-14 sm:h-16 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all select-none ${
+            className={`h-11 sm:h-15 rounded-xl sm:rounded-2xl font-mono text-base sm:text-xl font-bold flex items-center justify-center transition-all select-none ${
               isKeyActive(k)
                 ? 'bg-slate-800 hover:bg-slate-700 active:scale-95 text-white'
                 : 'bg-slate-950/40 text-slate-700 cursor-not-allowed'
@@ -421,7 +421,7 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
         ))}
         <button
           onClick={() => handleOperator('-')}
-          className={`h-14 sm:h-16 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all select-none ${
+          className={`h-11 sm:h-15 rounded-xl sm:rounded-2xl font-mono text-lg sm:text-xl font-bold flex items-center justify-center transition-all select-none ${
             pendingOp === '-'
               ? 'bg-blue-600 text-white shadow-md'
               : 'bg-blue-600/30 hover:bg-blue-600/50 active:scale-95 text-blue-400 border border-blue-500/30'
@@ -436,7 +436,7 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
             key={k}
             disabled={!isKeyActive(k)}
             onClick={() => handleInputDigit(k)}
-            className={`h-14 sm:h-16 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all select-none ${
+            className={`h-11 sm:h-15 rounded-xl sm:rounded-2xl font-mono text-base sm:text-xl font-bold flex items-center justify-center transition-all select-none ${
               isKeyActive(k)
                 ? 'bg-slate-800 hover:bg-slate-700 active:scale-95 text-white'
                 : 'bg-slate-950/40 text-slate-700 border border-slate-900 cursor-not-allowed'
@@ -447,7 +447,7 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
         ))}
         <button
           onClick={() => handleOperator('+')}
-          className={`h-14 sm:h-16 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all select-none ${
+          className={`h-11 sm:h-15 rounded-xl sm:rounded-2xl font-mono text-lg sm:text-xl font-bold flex items-center justify-center transition-all select-none ${
             pendingOp === '+'
               ? 'bg-blue-600 text-white shadow-md'
               : 'bg-blue-600/30 hover:bg-blue-600/50 active:scale-95 text-blue-400 border border-blue-500/30'
@@ -460,27 +460,27 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
         <button
           disabled={!isKeyActive('0')}
           onClick={() => handleInputDigit('0')}
-          className="h-14 sm:h-16 rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-mono text-xl font-bold flex items-center justify-center transition-all select-none"
+          className="h-11 sm:h-15 rounded-xl sm:rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-mono text-base sm:text-xl font-bold flex items-center justify-center transition-all select-none"
         >
           0
         </button>
         <button
           disabled={!isKeyActive('.')}
           onClick={() => handleInputDigit('.')}
-          className="h-14 sm:h-16 rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-mono text-2xl font-bold flex items-center justify-center transition-all select-none"
+          className="h-11 sm:h-15 rounded-xl sm:rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-mono text-lg sm:text-2xl font-bold flex items-center justify-center transition-all select-none"
         >
           .
         </button>
         <button
           onClick={handleBackspace}
-          className="h-14 sm:h-16 rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-rose-300 flex items-center justify-center transition-all select-none"
+          className="h-11 sm:h-15 rounded-xl sm:rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-rose-300 flex items-center justify-center transition-all select-none"
           title="Backspace"
         >
           <Delete className="w-5 h-5" />
         </button>
         <button
           onClick={handleEquals}
-          className="h-14 sm:h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 active:scale-95 text-white shadow-lg shadow-cyan-500/25 font-mono text-2xl font-bold flex items-center justify-center transition-all select-none"
+          className="h-11 sm:h-15 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 active:scale-95 text-white shadow-lg shadow-cyan-500/25 font-mono text-xl sm:text-2xl font-bold flex items-center justify-center transition-all select-none"
         >
           =
         </button>
