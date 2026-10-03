@@ -74,12 +74,12 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
         return { main: full, formatted: full, fullRaw: full };
       }
       case 'BIN': {
-        intStr = normalizedVal.toString(2).padStart(wordSize, '0');
+        intStr = normalizedVal.toString(2);
         if (supportFraction && currentFraction > 0) {
           fracStr = fractionToBaseString(currentFraction, 2, fractionPrecision).resultStr;
         }
         const full = fracStr ? `${intStr}.${fracStr}` : intStr;
-        const formatted = formatBinaryWithSpaces(intStr, wordSize) + (fracStr ? ` . ${fracStr}` : '');
+        const formatted = formatBinaryWithSpaces(normalizedVal.toString(2), wordSize) + (fracStr ? ` . ${fracStr}` : '');
         return { main: full, formatted, fullRaw: full };
       }
     }

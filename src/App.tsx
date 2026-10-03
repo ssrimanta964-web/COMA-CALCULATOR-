@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { WordSize, SignMode, ArithmeticOp, CpuFlags } from './types/calculator';
 import { getWordMask } from './utils/numberEngine';
 import { Navigation, TabId } from './components/Navigation';
@@ -11,8 +11,24 @@ import { ConverterTab } from './components/tabs/ConverterTab';
 import { CalculatorTab } from './components/tabs/CalculatorTab';
 import { ProgrammerTab } from './components/tabs/ProgrammerTab';
 import { LearnTab } from './components/tabs/LearnTab';
+import { FunnyLoadingScreen } from './components/FunnyLoadingScreen';
+
+// Strict session lock: ensures the intro can only run ONCE per page session
+let hasIntroRunThisSession = false;
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    if (hasIntroRunThisSession) {
+      return false;
+    }
+    return true;
+  });
+
+  const handleFinishLoading = useCallback(() => {
+    hasIntroRunThisSession = true;
+    setIsLoading(false);
+  }, []);
+
   const [activeTab, setActiveTab] = useState<TabId>('converter');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
 
@@ -62,12 +78,16 @@ export default function App() {
           : 'light-mode bg-slate-100 text-slate-900 selection:bg-blue-500/30'
       }`}
     >
+      {/* Cartoon Funny Splash Loading Screen (Runs strictly once on app launch) */}
+      {isLoading && <FunnyLoadingScreen onFinish={handleFinishLoading} />}
+
       {/* Mobile-First Navigation Header & Bottom Nav */}
       <Navigation
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isDarkMode={isDarkMode}
         setIsDarkMode={setIsDarkMode}
+        onReplayIntro={() => setIsLoading(true)}
       />
 
       {/* Main Tab Content Viewport */}

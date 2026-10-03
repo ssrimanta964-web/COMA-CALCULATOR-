@@ -8,6 +8,7 @@ interface NavigationProps {
   setActiveTab: (tab: TabId) => void;
   isDarkMode: boolean;
   setIsDarkMode: (dark: boolean) => void;
+  onReplayIntro?: () => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
@@ -15,6 +16,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   setActiveTab,
   isDarkMode,
   setIsDarkMode,
+  onReplayIntro,
 }) => {
   const tabs = [
     {
@@ -55,18 +57,51 @@ export const Navigation: React.FC<NavigationProps> = ({
         style={{ paddingTop: 'max(0.625rem, env(safe-area-inset-top, 0px))' }}
       >
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
-          {/* Logo / App Name */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-md shadow-cyan-500/20 text-white font-mono font-bold text-sm">
-              0x
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-sm sm:text-base text-white tracking-tight">
-                  BitCalc
+          {/* Funny Coma Logo / App Name */}
+          <div
+            onClick={onReplayIntro}
+            className="flex items-center gap-2.5 group cursor-pointer select-none"
+            title="Click to replay funny chase animation! 🎬"
+          >
+            {/* Funny Dizzy / Coma Mascot Logo */}
+            <div className="relative w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-400 via-rose-500 to-indigo-600 p-[2px] shadow-lg shadow-rose-500/25 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center relative overflow-hidden">
+                {/* Funny Face */}
+                <div className="flex flex-col items-center justify-center -space-y-0.5">
+                  {/* Eyes: One huge googly eye, one dizzy cross eye (x_O) */}
+                  <div className="flex items-center gap-1">
+                    {/* Left Eye: Dizzy X eye */}
+                    <div className="text-[11px] font-black text-rose-400 leading-none">
+                      ✕
+                    </div>
+                    {/* Right Eye: Big crazy googly eye with pupil */}
+                    <div className="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-end p-0.5 shadow-inner">
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-950 group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                  </div>
+                  {/* Derpy Smile / Tongue */}
+                  <div className="relative flex items-center justify-center">
+                    <div className="w-3 h-1.5 border-b-2 border-amber-300 rounded-b-full" />
+                    <span className="absolute -bottom-1 -right-0.5 text-[8px] leading-none">
+                      👅
+                    </span>
+                  </div>
+                </div>
+
+                {/* Comical floating 'zZ' snoring indicator */}
+                <span className="absolute -top-0.5 -right-0.5 text-[9px] font-mono font-extrabold text-cyan-300 animate-pulse">
+                  zZ
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-950/80 text-cyan-400 border border-cyan-800/60 hidden sm:inline">
-                  PRO
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-black text-sm sm:text-base text-white tracking-tight uppercase group-hover:text-amber-300 transition-colors">
+                  COMA <span className="text-cyan-400">CALCULATOR</span>
+                </span>
+                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-rose-950/80 text-rose-300 border border-rose-800/60 font-bold hidden sm:inline">
+                  (x_O) zZ
                 </span>
               </div>
             </div>
