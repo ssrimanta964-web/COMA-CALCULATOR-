@@ -8,7 +8,6 @@ interface NavigationProps {
   setActiveTab: (tab: TabId) => void;
   isDarkMode: boolean;
   setIsDarkMode: (dark: boolean) => void;
-  onReplayIntro?: () => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
@@ -16,7 +15,6 @@ export const Navigation: React.FC<NavigationProps> = ({
   setActiveTab,
   isDarkMode,
   setIsDarkMode,
-  onReplayIntro,
 }) => {
   const tabs = [
     {
@@ -53,16 +51,16 @@ export const Navigation: React.FC<NavigationProps> = ({
     <>
       {/* TOP HEADER (Branding & Desktop Tab Navigation) */}
       <header
-        className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 px-4 lg:px-6 py-2.5 transition-colors"
-        style={{ paddingTop: 'max(0.625rem, env(safe-area-inset-top, 0px))' }}
+        className="sticky top-0 z-40 bg-slate-950/85 backdrop-blur-xl border-b border-slate-800/80 px-3.5 sm:px-6 py-2.5 transition-colors w-full"
+        style={{
+          paddingTop: 'max(0.625rem, env(safe-area-inset-top, 0px))',
+          paddingLeft: 'max(0.875rem, env(safe-area-inset-left, 0px))',
+          paddingRight: 'max(0.875rem, env(safe-area-inset-right, 0px))',
+        }}
       >
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
           {/* Funny Coma Logo / App Name */}
-          <div
-            onClick={onReplayIntro}
-            className="flex items-center gap-2.5 group cursor-pointer select-none"
-            title="Click to replay funny chase animation! 🎬"
-          >
+          <div className="flex items-center gap-2.5 select-none">
             {/* Funny Dizzy / Coma Mascot Logo */}
             <div className="relative w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-400 via-rose-500 to-indigo-600 p-[2px] shadow-lg shadow-rose-500/25 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
               <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center relative overflow-hidden">
@@ -148,8 +146,12 @@ export const Navigation: React.FC<NavigationProps> = ({
 
       {/* MOBILE BOTTOM NAVIGATION BAR (Sticky at bottom on small screens) */}
       <nav
-        className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-950/95 backdrop-blur-2xl border-t border-slate-800/90 px-2 py-1.5 shadow-2xl"
-        style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))' }}
+        className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-950/95 backdrop-blur-2xl border-t border-slate-800/90 px-2 pt-1.5 shadow-2xl"
+        style={{
+          paddingBottom: 'max(0.65rem, env(safe-area-inset-bottom, 0px))',
+          paddingLeft: 'max(0.5rem, env(safe-area-inset-left, 0px))',
+          paddingRight: 'max(0.5rem, env(safe-area-inset-right, 0px))',
+        }}
       >
         <div className="grid grid-cols-4 gap-1 max-w-md mx-auto">
           {tabs.map((tab) => {

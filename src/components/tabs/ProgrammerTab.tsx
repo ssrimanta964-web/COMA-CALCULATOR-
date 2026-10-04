@@ -9,6 +9,7 @@ import {
   formatBinaryWithSpaces,
   formatHexWithSpaces,
 } from '../../utils/numberEngine';
+import { safeCopyToClipboard } from '../../utils/clipboard';
 import {
   Layers,
   Sparkles,
@@ -55,28 +56,57 @@ export const ProgrammerTab: React.FC<ProgrammerTabProps> = ({
     const bitMask = 1n << BigInt(bitIndex);
     const toggled = (normalizedVal ^ bitMask) & mask;
     onChangeValue(toggled);
+    const isZero = toggled === 0n;
+    const isNegative = ((toggled >> BigInt(wordSize - 1)) & 1n) === 1n;
+    setFlags({
+      ...flags,
+      zero: isZero,
+      sign: isNegative,
+    });
   };
 
-  // Quick Bit Actions
-  const handleSetAllZeros = () => onChangeValue(0n);
-  const handleSetAllOnes = () => onChangeValue(mask);
-  const handleInvertAll = () => onChangeValue(onesComplement(normalizedVal, wordSize));
-  const handleNegate = () => onChangeValue(twosComplementNegate(normalizedVal, wordSize));
+  // Quick Bit Actions with live CPU flag calculation
+  const handleSetAllZeros = () => {
+    onChangeValue(0n);
+    setFlags({ zero: true, sign: false, carry: false, overflow: false, parity: true });
+  };
+  const handleSetAllOnes = () => {
+    onChangeValue(mask);
+    const { flags: f } = executeOperation('|', mask, 0n, wordSize);
+    setFlags(f);
+  };
+  const handleInvertAll = () => {
+    const { resultMasked, flags: f } = executeOperation('~', normalizedVal, 0n, wordSize);
+    onChangeValue(resultMasked);
+    setFlags(f);
+  };
+  const handleNegate = () => {
+    const { resultMasked, flags: f } = executeOperation('-', 0n, normalizedVal, wordSize);
+    onChangeValue(resultMasked);
+    setFlags(f);
+  };
 
-  const handleShiftLeft = () => onChangeValue((normalizedVal << 1n) & mask);
-  const handleShiftRight = () => onChangeValue((normalizedVal >> 1n) & mask);
+  const handleShiftLeft = () => {
+    const { resultMasked, flags: f } = executeOperation('<<', normalizedVal, 1n, wordSize);
+    onChangeValue(resultMasked);
+    setFlags(f);
+  };
+  const handleShiftRight = () => {
+    const { resultMasked, flags: f } = executeOperation('>>', normalizedVal, 1n, wordSize);
+    onChangeValue(resultMasked);
+    setFlags(f);
+  };
 
   const handleRotateLeft = () => {
-    const topBit = (normalizedVal >> BigInt(wordSize - 1)) & 1n;
-    const shifted = (normalizedVal << 1n) & mask;
-    onChangeValue(shifted | topBit);
+    const { resultMasked, flags: f } = executeOperation('ROL', normalizedVal, 1n, wordSize);
+    onChangeValue(resultMasked);
+    setFlags(f);
   };
 
   const handleRotateRight = () => {
-    const lsb = normalizedVal & 1n;
-    const shifted = normalizedVal >> 1n;
-    const topBit = lsb << BigInt(wordSize - 1);
-    onChangeValue((shifted | topBit) & mask);
+    const { resultMasked, flags: f } = executeOperation('ROR', normalizedVal, 1n, wordSize);
+    onChangeValue(resultMasked);
+    setFlags(f);
   };
 
   // Execute bitwise operation with operand A
@@ -124,13 +154,14 @@ export const ProgrammerTab: React.FC<ProgrammerTabProps> = ({
   const isSignBitSet = ((normalizedVal >> BigInt(wordSize - 1)) & 1n) === 1n;
 
   const copyValue = () => {
-    navigator.clipboard.writeText(hexStr);
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 1500);
+    safeCopyToClipboard(hexStr).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 1500);
+    });
   };
 
   return (
-    <div className="flex flex-col gap-4 pb-20 sm:pb-6 max-w-xl mx-auto w-full">
+    <div className="flex flex-col gap-4 pb-24 sm:pb-6 max-w-xl mx-auto w-full">
       {/* 1. ARCHITECTURE & WORD SIZE TOGGLES */}
       <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-slate-900/90 border border-slate-800 rounded-2xl shadow-sm">
         {/* Word Size (8, 16, 32, 64) */}

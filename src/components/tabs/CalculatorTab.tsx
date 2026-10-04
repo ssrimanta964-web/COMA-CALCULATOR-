@@ -3,9 +3,11 @@ import { BaseType, WordSize, SignMode, ArithmeticOp, CpuFlags } from '../../type
 import {
   getWordMask,
   toTwosComplementSigned,
+  twosComplementNegate,
   executeOperation,
   parseBaseFractional,
 } from '../../utils/numberEngine';
+import { safeCopyToClipboard } from '../../utils/clipboard';
 import { Delete, Copy, Check, Equal } from 'lucide-react';
 
 interface CalculatorTabProps {
@@ -140,14 +142,20 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
 
   const handleNegate = () => {
     setCalcError(null);
-    if (displayStr.startsWith('-')) {
-      const pos = displayStr.slice(1);
-      setDisplayStr(pos);
-      onChangeValue(parseDisplayToBigInt(pos, activeBase));
-    } else if (displayStr !== '0') {
-      const neg = '-' + displayStr;
-      setDisplayStr(neg);
-      onChangeValue(parseDisplayToBigInt(neg, activeBase));
+    if (activeBase === 'DEC') {
+      if (displayStr.startsWith('-')) {
+        const pos = displayStr.slice(1);
+        setDisplayStr(pos);
+        onChangeValue(parseDisplayToBigInt(pos, activeBase));
+      } else if (displayStr !== '0') {
+        const neg = '-' + displayStr;
+        setDisplayStr(neg);
+        onChangeValue(parseDisplayToBigInt(neg, activeBase));
+      }
+    } else {
+      const negated = twosComplementNegate(normalizedVal, wordSize);
+      onChangeValue(negated);
+      setDisplayStr(formatValueInBase(negated, activeBase));
     }
   };
 
@@ -214,9 +222,10 @@ export const CalculatorTab: React.FC<CalculatorTabProps> = ({
   };
 
   const copyDisplay = () => {
-    navigator.clipboard.writeText(displayStr);
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 1500);
+    safeCopyToClipboard(displayStr).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 1500);
+    });
   };
 
   // Keyboard listener for physical typing in Calculator

@@ -4,6 +4,7 @@ import {
   generateDivisionSteps,
   generateMultiplicationSteps,
   generateBinaryAdditionSteps,
+  generateBinarySubtractionSteps,
   generateTwosComplementSteps,
 } from '../../utils/stepBreakdown';
 import { parseIeee754, getWordMask, getByteBreakdown } from '../../utils/numberEngine';
@@ -42,7 +43,10 @@ export const LearnTab: React.FC<LearnTabProps> = ({
 
   const divisionSteps = generateDivisionSteps(normalizedVal, targetBase);
   const multiplicationSteps = generateMultiplicationSteps(currentFraction, targetBase, 6);
-  const additionBreakdown = generateBinaryAdditionSteps(operandA, operandB, wordSize);
+  const isSubtraction = arithmeticOp === '-';
+  const arithmeticBreakdown = isSubtraction
+    ? generateBinarySubtractionSteps(operandA, operandB, wordSize)
+    : generateBinaryAdditionSteps(operandA, operandB, wordSize);
   const twosBreakdown = generateTwosComplementSteps(normalizedVal, wordSize);
   const ieee754 = parseIeee754(normalizedVal, wordSize);
   const { bigEndian, littleEndian } = getByteBreakdown(normalizedVal, wordSize);
@@ -56,7 +60,7 @@ export const LearnTab: React.FC<LearnTabProps> = ({
   ];
 
   return (
-    <div className="flex flex-col gap-4 pb-20 sm:pb-6 max-w-xl mx-auto w-full">
+    <div className="flex flex-col gap-4 pb-24 sm:pb-6 max-w-xl mx-auto w-full">
       {/* 1. SECTION PICKER PILLS */}
       <div className="flex items-center gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto shadow-inner">
         {sections.map((sec) => {
@@ -187,44 +191,49 @@ export const LearnTab: React.FC<LearnTabProps> = ({
           </div>
         )}
 
-        {/* SECTION 2: RIPPLE CARRIES */}
+        {/* SECTION 2: RIPPLE CARRIES & BORROWS */}
         {activeSection === 'carries' && (
           <div className="space-y-4">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <Columns className="w-4 h-4 text-blue-400" />
-              Bitwise Column Ripple-Carry Addition
+              {isSubtraction
+                ? 'Bitwise Column Binary Subtraction with Borrows'
+                : 'Bitwise Column Ripple-Carry Binary Addition'}
             </h3>
             <p className="text-xs text-slate-400">
-              Breakdown of how binary columns add bit-by-bit from LSB to MSB with carries:
+              {isSubtraction
+                ? 'Breakdown of binary subtraction bit-by-bit from LSB to MSB with borrow propagation:'
+                : 'Breakdown of how binary columns add bit-by-bit from LSB to MSB with carry propagation:'}
             </p>
 
             {/* Diagram */}
             <div className="bg-slate-950 rounded-2xl p-4 font-mono text-xs sm:text-sm border border-slate-800 overflow-x-auto space-y-1">
               <div className="text-amber-400">
-                Carries:  {additionBreakdown.carries}
+                {isSubtraction ? 'Borrows:' : 'Carries:'}  {'borrows' in arithmeticBreakdown ? arithmeticBreakdown.borrows : arithmeticBreakdown.carries}
               </div>
               <div className="text-slate-300">
-                Number A: {additionBreakdown.binaryA}
+                Number A: {arithmeticBreakdown.binaryA}
               </div>
               <div className="text-slate-300">
-                + Op B:   {additionBreakdown.binaryB}
+                {isSubtraction ? '- Op B:   ' : '+ Op B:   '}{arithmeticBreakdown.binaryB}
               </div>
               <div className="border-t border-slate-700 my-1" />
               <div className="text-cyan-400 font-bold">
-                Sum:      {additionBreakdown.binaryResult}
+                {isSubtraction ? 'Diff:     ' : 'Sum:      '}{arithmeticBreakdown.binaryResult}
               </div>
             </div>
 
             {/* Column explanations */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
-              {additionBreakdown.columns.slice(0, 16).map((col) => (
+              {arithmeticBreakdown.columns.slice(0, 16).map((col) => (
                 <div
                   key={col.column}
                   className="p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 text-xs font-mono flex items-center justify-between"
                 >
                   <span className="text-slate-300">{col.explanation}</span>
                   <span className="text-[10px] text-amber-400 font-bold">
-                    C_out: {col.carryOut}
+                    {isSubtraction ? 'B_out: ' : 'C_out: '}
+                    {col.carryOut}
                   </span>
                 </div>
               ))}

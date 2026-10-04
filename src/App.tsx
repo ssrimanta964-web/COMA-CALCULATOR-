@@ -13,19 +13,19 @@ import { ProgrammerTab } from './components/tabs/ProgrammerTab';
 import { LearnTab } from './components/tabs/LearnTab';
 import { FunnyLoadingScreen } from './components/FunnyLoadingScreen';
 
-// Strict session lock: ensures the intro can only run ONCE per page session
-let hasIntroRunThisSession = false;
-
 export default function App() {
-  const [isLoading, setIsLoading] = useState<boolean>(() => {
-    if (hasIntroRunThisSession) {
-      return false;
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Clear any stale sessionStorage flags
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem('coma_intro_completed');
+    } catch {
+      // no-op
     }
-    return true;
-  });
+  }, []);
 
   const handleFinishLoading = useCallback(() => {
-    hasIntroRunThisSession = true;
     setIsLoading(false);
   }, []);
 
@@ -72,7 +72,7 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-screen font-sans transition-colors duration-200 flex flex-col ${
+      className={`min-h-[100dvh] w-full overflow-x-hidden font-sans transition-colors duration-200 flex flex-col ${
         isDarkMode
           ? 'bg-slate-950 text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200'
           : 'light-mode bg-slate-100 text-slate-900 selection:bg-blue-500/30'
@@ -87,11 +87,10 @@ export default function App() {
         setActiveTab={setActiveTab}
         isDarkMode={isDarkMode}
         setIsDarkMode={setIsDarkMode}
-        onReplayIntro={() => setIsLoading(true)}
       />
 
       {/* Main Tab Content Viewport */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-3 sm:px-6 py-4 flex flex-col justify-start">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-3 sm:px-6 py-3.5 pb-28 sm:pb-10 flex flex-col justify-start">
         {/* TAB 1: CONVERTER MODE */}
         {activeTab === 'converter' && (
           <div className="w-full animate-in fade-in duration-200">
@@ -102,6 +101,8 @@ export default function App() {
               onChangeFraction={setCurrentFraction}
               wordSize={wordSize}
               signMode={signMode}
+              onSelectWordSize={setWordSize}
+              onSelectSignMode={setSignMode}
               supportFraction={supportFraction}
               setSupportFraction={setSupportFraction}
               fractionPrecision={fractionPrecision}

@@ -8,11 +8,12 @@
 /* Edge-to-Edge Android & Mobile App Ergonomics */
 html, body {
   min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-left: env(safe-area-inset-left, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
 }
 
 button {
@@ -43,7 +44,8 @@ button {
   color: #0f172a !important;
 }
 
-.light-mode header {
+.light-mode header,
+.light-mode nav {
   background-color: rgba(255, 255, 255, 0.95) !important;
   border-color: #e2e8f0 !important;
 }

@@ -4,11 +4,13 @@ import {
   getWordMask,
   toTwosComplementSigned,
   onesComplement,
+  twosComplementNegate,
   formatBinaryWithSpaces,
   formatHexWithSpaces,
   fractionToBaseString,
   parseBaseFractional,
 } from '../../utils/numberEngine';
+import { safeCopyToClipboard } from '../../utils/clipboard';
 import { Copy, Check, Delete, SlidersHorizontal } from 'lucide-react';
 
 interface ConverterTabProps {
@@ -18,6 +20,8 @@ interface ConverterTabProps {
   onChangeFraction: (newFrac: number) => void;
   wordSize: WordSize;
   signMode: SignMode;
+  onSelectWordSize?: (ws: WordSize) => void;
+  onSelectSignMode?: (sm: SignMode) => void;
   supportFraction: boolean;
   setSupportFraction: (support: boolean) => void;
   fractionPrecision: number;
@@ -30,15 +34,23 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
   onChangeFraction,
   wordSize,
   signMode,
+  onSelectWordSize,
+  onSelectSignMode,
   supportFraction,
   setSupportFraction,
   fractionPrecision,
 }) => {
   const [activeBase, setActiveBase] = useState<BaseType>('DEC');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [inputBuffer, setInputBuffer] = useState<string | null>(null);
 
   const mask = getWordMask(wordSize);
   const normalizedVal = currentValue & mask;
+
+  // Clear input buffer on wordSize/signMode changes
+  React.useEffect(() => {
+    setInputBuffer(null);
+  }, [wordSize, signMode]);
 
   // Format representations for the 4 cards
   const formatBaseDisplay = (base: BaseType): { main: string; formatted: string; fullRaw: string } => {
@@ -92,17 +104,20 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
 
   // Input processing
   const handleKeypadPress = (key: string) => {
-    let currentRaw = '';
-    switch (activeBase) {
-      case 'DEC': currentRaw = decData.main; break;
-      case 'HEX': currentRaw = hexData.main; break;
-      case 'OCT': currentRaw = octData.main; break;
-      case 'BIN': currentRaw = binData.main; break;
+    let currentRaw = inputBuffer !== null ? inputBuffer : '';
+    if (inputBuffer === null) {
+      switch (activeBase) {
+        case 'DEC': currentRaw = decData.main; break;
+        case 'HEX': currentRaw = hexData.main; break;
+        case 'OCT': currentRaw = octData.main; break;
+        case 'BIN': currentRaw = binData.main; break;
+      }
     }
 
     let nextRaw = currentRaw;
 
     if (key === 'CLEAR') {
+      setInputBuffer(null);
       onChangeValue(0n);
       onChangeFraction(0);
       return;
@@ -110,6 +125,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
 
     if (key === 'BACKSPACE') {
       if (currentRaw.length <= 1) {
+        setInputBuffer(null);
         onChangeValue(0n);
         onChangeFraction(0);
         return;
@@ -118,7 +134,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
     } else if (key === '.') {
       if (!supportFraction) setSupportFraction(true);
       if (!currentRaw.includes('.')) {
-        nextRaw = currentRaw + '.';
+        nextRaw = (currentRaw || '0') + '.';
       }
     } else if (key === '+/-') {
       if (activeBase === 'DEC') {
@@ -128,19 +144,21 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
           nextRaw = '-' + currentRaw;
         }
       } else {
-        // Toggle MSB for binary / hex / octal
-        const msb = 1n << BigInt(wordSize - 1);
-        onChangeValue(normalizedVal ^ msb);
+        const negated = twosComplementNegate(normalizedVal, wordSize);
+        onChangeValue(negated);
+        setInputBuffer(null);
         return;
       }
     } else {
       // Append digit
-      if (currentRaw === '0' && key !== '.') {
+      if ((currentRaw === '0' || currentRaw === '') && key !== '.') {
         nextRaw = key;
       } else {
         nextRaw = currentRaw + key;
       }
     }
+
+    setInputBuffer(nextRaw);
 
     // Parse the updated string in the active base
     const radix = activeBase === 'HEX' ? 16 : activeBase === 'DEC' ? 10 : activeBase === 'OCT' ? 8 : 2;
@@ -190,9 +208,10 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
 
   const copyToClipboard = (text: string, key: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 1500);
+    safeCopyToClipboard(text).then(() => {
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 1500);
+    });
   };
 
   // Determine which keys are active based on the selected card
@@ -278,10 +297,15 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
           const isActive = activeBase === card.base;
           const isCopied = copiedKey === card.base;
 
+          const displayVal = isActive && inputBuffer !== null ? inputBuffer : (card.value || '0');
+
           return (
             <div
               key={card.base}
-              onClick={() => setActiveBase(card.base)}
+              onClick={() => {
+                setActiveBase(card.base);
+                setInputBuffer(null);
+              }}
               className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/90 border transition-all cursor-pointer relative shadow-md select-none flex flex-col justify-between min-h-[66px] sm:min-h-0 ${
                 isActive
                   ? `bg-slate-900 ${card.activeBorder} ${card.activeGlow} ring-2 ring-offset-1 ring-offset-slate-950`
@@ -326,7 +350,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
                   isActive ? card.color : 'text-slate-200'
                 }`}
               >
-                {card.value || '0'}
+                {displayVal}
               </div>
 
               {/* Formatted Nibble / Byte preview for Binary/Hex */}
@@ -340,9 +364,50 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
         })}
       </div>
 
-      {/* FRACTION TOGGLE STRIP */}
-      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-[11px] sm:text-xs">
-        <span className="text-slate-400 font-medium">Fractional Digits:</span>
+      {/* ARCHITECTURE & FRACTION CONTROLS STRIP */}
+      <div className="flex flex-wrap items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-[11px] sm:text-xs">
+        {/* Word Size (8b, 16b, 32b, 64b) */}
+        {onSelectWordSize && (
+          <div className="flex items-center gap-1 bg-slate-900/90 p-0.5 rounded-lg border border-slate-800">
+            {([8, 16, 32, 64] as WordSize[]).map((bits) => (
+              <button
+                key={bits}
+                onClick={() => onSelectWordSize(bits)}
+                className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold transition-all ${
+                  wordSize === bits
+                    ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {bits}b
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Signed / Unsigned */}
+        {onSelectSignMode && (
+          <div className="flex items-center gap-1 bg-slate-900/90 p-0.5 rounded-lg border border-slate-800">
+            {[
+              { id: 'signed', label: 'Signed' },
+              { id: 'unsigned', label: 'Unsign' },
+            ].map((m) => (
+              <button
+                key={m.id}
+                onClick={() => onSelectSignMode(m.id as SignMode)}
+                className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold transition-all ${
+                  signMode === m.id
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Fractions Switch */}
         <button
           onClick={() => setSupportFraction(!supportFraction)}
           className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-semibold border flex items-center gap-1.5 transition-colors ${
@@ -352,7 +417,7 @@ export const ConverterTab: React.FC<ConverterTabProps> = ({
           }`}
         >
           <SlidersHorizontal className="w-3 h-3" />
-          {supportFraction ? 'Fractions: ON' : 'Fractions: OFF'}
+          {supportFraction ? 'Frac: ON' : 'Frac: OFF'}
         </button>
       </div>
 

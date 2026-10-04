@@ -1,6 +1,6 @@
 {
-  "name": "Machine Number Systems & Bitwise Architect Calculator",
-  "description": "Production-ready Computer Number System and Machine Language Calculator featuring arbitrary base conversions, interactive 64-bit toggle strip, low-level bitwise arithmetic with CPU flags, and step-by-step educational breakdowns.",
+  "name": "COMA CALCULATOR",
+  "description": "COMA CALCULATOR - The funniest and smartest Computer Number System & Machine Language Calculator featuring base conversions, bitwise arithmetic, and interactive proofs.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
