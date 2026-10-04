@@ -1,0 +1,24 @@
+{
+  "background_color": "#060505",
+  "description": "COMA CALCULATOR - The funniest and smartest Computer Number System & Machine Language Calculator featuring base conversions, bitwise arithmetic, and interactive proofs.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "comacalulator.netlify",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "comacalulator",
+  "start_url": "/",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
